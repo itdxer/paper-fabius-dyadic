@@ -1,0 +1,885 @@
+\documentclass{article}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+% \usepackage{dsfont}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage[english]{babel}
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% \DeclareMathOperator{\di}{d\!}
+% \newcommand*\Eval[3]{\left.#1\right\rvert_{#2}^{#3}}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}[lemma]
+% End proof with a filled black square
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% Remove section numbering
+\makeatletter
+\renewcommand{\@seccntformat}[1]{}
+\makeatother
+
+\title{An alternative way of evaluating Fabius function at dyadic rationals}
+\author{Yurii Shevchuk}
+\date{June 2024}
+
+\begin{document}
+
+\maketitle
+
+Jeroen Fabius introduced the Fabius function \cite{Fabius1966APE} as an example of an infinitely differentiable function that is nowhere analytic. Although according to \cite{dereyna2017arithmetic}, the function has been rediscovered many times in different contexts. One of the methods for evaluating the function at dyadic rationals has been presented in \cite{haugland2020evaluating}. This paper presents an alternative method for evaluating the Fabius function at dyadic rationals, summarised in Theorem $\ref{theorem:main}$.
+
+The definition of the Fabius function follows directly from the definitions of the original paper \cite{Fabius1966APE}. Assume $u_i$ are independent and identically distributed samples from the uniform distribution on the unit interval (i.e., $u_k \sim U[0, 1] \,\forall\, k \in \mathbb{N}$). Define a random variable $Y = \sum_{k=1}^{n} u_k/2^k$  which follows distribution $\mathcal{F}_n$ (i.e. $Y \sim \mathcal{F}_n$) with probability density function (PDF) $p_n$ and cumulative distribution function (CDF) $F_n$. The Fabius distribution $\mathcal{F}$ with PDF $p$ and CDF $F$ is obtained by computing the limit of $\mathcal{F}_n$ as $n \to \infty$. It has been shown \cite{Fabius1966APE} that for the Fabius distribution $p(y) = 2F(2y)$ if $0 \le y \le 1/2$. This relation will be used to evaluate the Fabius function in Theorem $\ref{theorem:main}$ when the input is a dyadic rational.
+
+% % Lemma: Relation between p and F
+% \begin{lemma}
+% \label{lemma:fabius-pdf-cdf}
+% If  $\mathcal{F}$ is a Fabius distribution with CDF and PDF defined as $F$ and $p$ respectively then for $0 \le y \le 1$
+% \[
+% F(y) = \frac{1}{2} \, p\left(\frac{y}{2}\right)
+% \]
+% \end{lemma}
+% \begin{proof}
+% Define $y = (x+u)/2$ where $x \sim \mathcal{F}$, $u \sim U[0, 1]$. From the definition of the Fabius distribution, it follows that $y \sim \mathcal{F}$. Assume $0 \le y \le 1/2$, then applying convolution of two probability distributions we get
+% \begin{align*}
+% p(y) & = \int_{-\infty}^{\infty} 2p(2x) \, q(y-x) dx \\
+%      & = 4 \int_{-\infty}^{\infty} p(2x) \, I\left[0 \le y-x \le 1/2\right] dx \\
+%      & = 4\int_{0}^{y} p(2x) \, dx \\
+%      & = 2F(2y)
+% \end{align*}
+% where $\mathds{I}$ is an indicator function. Applying a change of variable and moving the constant term gives the desired result.
+% \end{proof}
+
+Define
+\begin{align}
+Q(x, k, m)
+&=
+  \sum_{j=0}^{k-1}
+    (-1)^{s_2(j)}
+    \left(x-j\right)^{m} \\
+G(r, k, t) 
+&= Q(r2^k, 2^k, k+t) \label{eq:G-def} \\
+&=
+  \sum_{j=0}^{2^k-1}
+    (-1)^{s_2(j)}
+    \left(r2^{k}-j\right)^{k+t} 
+\end{align}
+where $s_2(j)$ is a number of ones in the binary expansion of $j$.
+
+% Lemma: Zeros of the Q function
+\begin{lemma}
+\label{lemma:q-zeros}
+If $x \in \mathbb{R}$ and $k, m \in \mathbb{N}$ then $Q(x, 2^k, k) = k!2^{\binom{k}{2}}$ and $Q(x, 2^k, m)=0$ if $m < k$
+\end{lemma}
+\begin{proof}
+The lemma can be proved by induction. It is easy to show that $Q(x, 2^{k}, 0)=0$ if $k > 0$ since the sum contains an equal number of even and odd powers of $-1$. Next, assume $Q(x, 2^k, m)=0$ holds for all $m$ if $m < k$. Then
+\begin{align*}
+Q(x, 2^{k}, m+1)
+&=
+  \sum_{j=0}^{2^{k}-1}
+    (-1)^{s_2(j)}
+    (x-j)^{m+1} \\
+&=
+  Q(x, 2^{k-1}, m+1)
+  -
+  \sum_{j=0}^{2^{k-1}-1}
+    (-1)^{s_2(j)}
+    (x-j-2^{k-1})^{m+1} \\
+&=
+  Q(x, 2^{k-1}, m+1)
+  -
+  \sum_{i=0}^{m+1}
+    \binom{m+1}{i}
+    (-1)^i
+    2^{i(k-1)}
+    Q(x, 2^{k-1}, m-i+1) \\
+&=
+  \sum_{i=1}^{m+1}
+    \binom{m+1}{i}
+    (-1)^{i+1}
+    2^{i(k-1)}
+    Q(x, 2^{k-1}, m-i+1) \\
+&=
+  (m+1)
+  2^{k-1}
+  Q(x, 2^{k-1}, m)
+\end{align*}
+where in the second equality, we used the fact that $s_2(j+2^k) = s_2(j)+1$ if $j < 2^k$, and in the last step, we used induction to replace all but one term of the sum with zero. Solving the recursion, we get
+\begin{align*}
+    Q(x, 2^k, m+1) = (m+1)! 2^{\binom{k}{2} - \binom{k-m}{2}} Q(x, 2^{k-m-1}, 0)
+\end{align*}
+If $k=m+1$ then $Q(x, 1, 0) = 1$ and if $k > m+1$ then $Q(x, 2^{k-m-1},0) = 0$. Substituting both cases into the recursion finishes the proof.
+\end{proof}
+
+% Theorem: p_n as a sum
+\begin{theorem}
+\label{theorem:pn}
+If $n \in \mathbb{N}$  and $p_n$ is a PDF of $\mathcal{F}_n$ then for $m \in \{0, 1, ..., 2^{n}-2\}$ and $y \in \left[\frac{m}{2^{n}}, \frac{m+1}{2^{n}}\right]$
+\begin{align}
+p_n(y)
+=
+  \frac{2^{\binom{n+1}{2}}}{(n-1)!}
+  \sum_{k=0}^{m}
+    (-1)^{s_2(k)}
+    \left(y - \frac{k}{2^n}\right)^{n-1}
+    \label{eq:pdf-n} 
+\end{align}
+\end{theorem}
+\begin{proof}
+Define $x_{n+1} = x_n + u_{n+1}/2^{n+1}$ where $x_{n+1} \sim \mathcal{F}_{n+1}$, $x_{n} \sim \mathcal{F}_{n}$, $u_{n+1} \sim U[0,1]$ and $x_0 = 0$. Applying the convolution of two probability distributions, we get
+\begin{align*}
+p_{n+1}(y) &= \int_{-\infty}^{\infty} p_n(x) q_{n+1}(y-x) dx \\
+           &=  2^{n+1} \int_{-\infty}^{\infty} p_n(x) \left[0 \le y-x \le 1/2^{n+1}\right] dx \\
+           &= 2^{n+1} \int_{y-1/2^{n+1}}^{y} p_n(x) dx
+\end{align*}
+where $[...]$ is a notation for Iverson bracket which is equal to $1$ if the boolean statement inside the brackets is true and $0$ if it's false.
+
+We finish the proof with an inductive argument. If $n=1$ then from ($\ref{eq:pdf-n}$) we get $p_1(y)=2\,[0 \le y \le 1/2]$  which is a PDF of the uniform distribution $U[0, 1/2]$. Assume that ($\ref{eq:pdf-n}$) holds for $p_n$. It is a piece-wise polynomial, which means that in order to complete the induction proof, we must consider four separate cases:
+
+\textbf{Case 1}: $y \in \left[0, \frac{1}{2^{n+1}}\right]$
+\begin{align*}
+p_{n+1}(y) = 2^{n+1} \int_{0}^{y} p_n(x) dx
+           = 2^{n+1} \int_{0}^{y}\frac{2^{\binom{n+1}{2}}}{(n-1)!}x^{n-1} dx
+           = \frac{2^{\binom{n+2}{2}}}{n!} y^n
+\end{align*}
+
+\textbf{Case 2}: $y \in \left[\frac{2m}{2^{n+1}}, \frac{2m+1}{2^{n+1}}\right]$ where $m \in \{1, ..., 2^n-2\}$
+\begin{align*}
+p_{n+1}(y) 
+    &= 2^{n+1}
+        \left(\int_{y-1/2^{n+1}}^{m/2^n} p_n(x) dx 
+        + \int_{m/2^n}^{y} p_n(x) dx\right) \\
+    &= 
+        \frac{2^{\binom{n+2}{2}}}{n!}
+        \left(
+            -\sum_{k=0}^{m-1} (-1)^{s_2(k)}\left(y-\frac{1}{2^{n+1}}-\frac{k}{2^{n}}\right)^n
+            + \sum_{k=0}^{m} (-1)^{s_2(k)}\left(y-\frac{k}{2^{n}}\right)^n \right) \\
+    &= 
+        \frac{2^{\binom{n+2}{2}}}{n!}\left(\sum_{k=0}^{m-1} (-1)^{s_2(2k+1)}\left(y-\frac{2k+1}{2^{n+1}}\right)^n
+        +\sum_{k=0}^{m} (-1)^{s_2(2k)}\left(y-\frac{2k}{2^{n+1}}\right)^n \right)\\
+    &= 
+        \frac{2^{\binom{n+2}{2}}}{n!}\sum_{k=0}^{2m} (-1)^{s_2(k)}\left(y-\frac{k}{2^{n+1}}\right)^n 
+\end{align*}
+where the third equality uses the fact that $s_2(2k) = s_2(k)$ and $s_2(2k+1) = s_2(k)+1$
+
+\textbf{Case 3}: $y \in \left[\frac{2m+1}{2^{n+1}}, \frac{2m+2}{2^{n+1}}\right]$ where $m \in \{0, ..., 2^n-2\}$
+\begin{align*}
+p_{n+1}(y)
+&=
+  2^{n+1}
+  \int_{y-1/2^{n+1}}^{y} p_n(x) dx \\
+&=
+  \frac{2^{\binom{n+2}{2}}}{n!}
+  \left(
+    \sum_{k=0}^{m} (-1)^{s_2(k)}\left(y-\frac{2k}{2^{n+1}}\right)^n
+    +\sum_{k=0}^{m} (-1)^{s_2(k)+1}\left(y-\frac{2k+1}{2^{n+1}}\right)^n
+  \right) \\
+&=
+  \frac{2^{\binom{n+2}{2}}}{n!}
+  \sum_{k=0}^{2m+1}
+    (-1)^{s_2(k)}
+    \left(y-\frac{k}{2^{n+1}}\right)^n 
+\end{align*}
+\textbf{Case 4}: $y \in \left[\frac{2^{n+1}-2}{2^{n+1}}, \frac{2^{n+1}-1}{2^{n+1}}\right]$
+\begin{align*}
+p_{n+1}(y)
+&=
+  2^{n+1}
+  \int_{y-1/2^{n+1}}^{1-1/2^n}
+    p_n(x)
+    dx \\
+&= 
+  \frac{2^{\binom{n+2}{2}}}{n!}
+  \left(
+    \sum_{k=0}^{2^{n}-2}
+      (-1)^{s_2(k)}\left(1-\frac{1}{2^n}-\frac{k}{2^{n}}\right)^n
+    +
+    \sum_{k=0}^{2^{n}-2}
+      (-1)^{s_2(k)+1}\left(y-\frac{2k+1}{2^{n+1}}\right)^n
+  \right) \\
+&= 
+  \frac{2^{\binom{n+2}{2}}}{n!}
+  \left(
+    \frac{1}{2^{n^2}}
+    \sum_{k=0}^{2^{n}-1}
+      (-1)^{s_2(k)}
+      \left(\left(1-\frac{1}{2^n}\right)2^n-k\right)^n
+    +
+    \sum_{k=0}^{2^{n}-2}
+      (-1)^{s_2(2k+1)}\left(y-\frac{2k+1}{2^{n+1}}\right)^n
+  \right) \\
+&= 
+  \frac{2^{\binom{n+2}{2}}}{n!}
+  \left(
+    \frac{1}{2^{n^2}}
+    G\left(1-\frac{1}{2^n},n,0\right)
+    +
+    \sum_{k=0}^{2^{n}-2}
+      (-1)^{s_2(2k+1)}\left(y-\frac{2k+1}{2^{n+1}}\right)^n
+  \right) \\
+&= 
+  \frac{2^{\binom{n+2}{2}}}{n!}
+  \left(
+    \frac{1}{2^{n^2}}
+    G\left(y,n,0\right)
+    +
+    \sum_{k=0}^{2^{n}-2}
+      (-1)^{s_2(2k+1)}\left(y-\frac{2k+1}{2^{n+1}}\right)^n
+  \right) \\
+&= 
+  \frac{2^{\binom{n+2}{2}}}{n!}
+  \left(
+    \sum_{k=0}^{2^{n}-1}
+      (-1)^{s_2(2k)}
+      \left(y-\frac{2k}{2^{n+1}}\right)^n
+    +
+    \sum_{k=0}^{2^{n}-2}
+      (-1)^{s_2(2k+1)}\left(y-\frac{2k+1}{2^{n+1}}\right)^n
+  \right) \\
+&=
+  \frac{2^{\binom{n+2}{2}}}{n!}
+  \sum_{k=0}^{2^{n+1}-2}
+    (-1)^{s_2(k)}
+    \left(y-\frac{k}{2^{n+1}}\right)^n 
+\end{align*}
+where fifth equality uses the fact that $G\left(1-1/2^n,n,0\right) = G\left(y,n,0\right)$ which holds according to Lemma \ref{lemma:q-zeros} and definition ($\ref{eq:G-def}$).
+
+Four cases cover all possible values of $y \in [0, 1-1/2^{n+1}]$, which completes the proof by induction.
+\end{proof}
+We must rely on coefficients with double and triple indices in the upcoming lemmas and theorems. For simplicity, coefficients with triple indices will be specified without a space or commas. For example, variable $\alpha_{tij}$ points to a coefficient associated with a tuple $(t, i, j)$. In addition, brackets will be used to separate indices when addition or subtraction is used. For example, $\alpha_{(t-i)(i-j)j}$ is associated with a tuple $(t-i, i-j, j)$.
+
+% Lemma: Simplified form of G
+\begin{lemma}
+If $r \in \mathbb{R}$, $k, t \in \mathbb{N}$ and $G$ is defined by equation ($\textit{\ref{eq:G-def}}$) then
+\begin{align}
+\label{eq:lemma-3-G}
+G(r, k, t)
+&=
+  (k+t)!2^{\binom{k}{2}}
+  \sum_{i=0}^{t}
+    2^{ik}
+    \sum_{j=0}^{i}
+      \alpha_{tij}
+      r^j \\
+\label{eq:alpha-definition}
+a_{tij}
+&=
+  (-1)^{i-j}
+  \binom{i}{j}
+  \left(
+    \frac{1}{i!(t-i)!}
+    - q_{ti}
+  \right)
+  +f_{tij} \\
+\label{eq:q-definition}
+q_{ti}
+&=
+ \sum_{a=i}^{t-1}
+   \sum_{b=i}^{a}
+     \sum_{c=i}^{b}
+       \binom{c}{i}
+       \frac{\alpha_{abc}}{(t-a+1)!(2^{t+b-a-i}-1)} \\
+\label{eq:f-definition}
+f_{tij}
+&=
+  \sum_{a=j}^{i-1}
+    \sum_{b=j}^{a}
+      \sum_{c=j}^{b}
+        (-1)^{c-j}
+        \binom{b}{c}
+        \binom{c}{j}
+        \frac{\alpha_{(t-i+a)ab}}{(i-a+1)!(2^{i-c}-1)}
+\end{align}
+\end{lemma}
+\begin{proof}
+We start the proof by defining the recursion on $G$
+\begin{align*}
+G(r, k, t) &= \sum_{i=0}^{2^k-1} (-1)^{s_2(i)}\left(r2^{k}-i\right)^{k+t} \\
+    &= \sum_{i=0}^{2^{k-1}-1} (-1)^{s_2(i)}\left(r2^{k}-i\right)^{k+t} - \sum_{i=0}^{2^{k-1}-1} (-1)^{s_2(i)}\left(r2^{k}-2^{k-1}-i\right)^{k+t} \\
+    &= \sum_{i=0}^{2^{k-1}-1} (-1)^{s_2(i)}2^{k-1}\sum_{j=0}^{k+t-1} (r2^{k}-i)^j((2r-1)2^{k-1}-i)^{k+t-j-1} \\
+    &= \sum_{i=0}^{2^{k-1}-1} (-1)^{s_2(i)}2^{k-1}\sum_{j=0}^{k+t-1} \sum_{s=0}^{j}\binom{j}{s}2^{(k-1)s}((2r-1)2^{k-1}-i)^{k+t-s-1} \\
+    &= \sum_{i=0}^{2^{k-1}-1} (-1)^{s_2(i)}2^{k-1} \sum_{s=0}^{k+t-1}\binom{k+t}{s+1}2^{(k-1)s}((2r-1)2^{k-1}-i)^{k+t-s-1} \\
+    &= \sum_{s=0}^{k+t-1}\binom{k+t}{s+1}2^{(k-1)(s+1)}\sum_{i=0}^{2^{k-1}-1} (-1)^{s_2(i)}((2r-1)2^{k-1}-i)^{k+t-s-1} \\
+    &= \sum_{s=0}^{t}\binom{k+t}{s+1}2^{(k-1)(s+1)} G(2r-1, k-1,t-s)
+\end{align*}
+The second equality is obtained by splitting the sum into two sums and using the fact that $s_2(j+2^{k}) = s_2(j)+1$ if $j \in \{0, 1, ..., 2^k-1\}$. The fifth equality is obtained by interchanging the sums and using the fact that $\sum_{j=s}^{m} \binom{j}{s}=\binom{m+1}{s+1}$. The final equality uses the definition of G and Lemma $\ref{lemma:q-zeros}$ to eliminate the terms for which $t < s$.
+
+The rest of the proof can be finished by induction. We can see the equation ($\ref{eq:lemma-3-G}$) holds for $G(r, 0, 0)$ for all $r$, since $G(r, 0, 0)=\alpha_{000}=1$. Next we assume by strong induction that $G(r, k', t')$ holds for all $r$ when $k' < k$, $t' < t$. Finally, we use previously derived recursion to show that the formula holds for larger $k$ and $t$.
+
+With induction, we can represent previously derived recursion in the form $x_k = a_k x_{k-1} + b_{k}$ where
+\begin{align*}
+x_{m} &= G((r-1)2^{k-m}+1, m, t) \\
+a_m &= (m+t)2^{m-1} \\
+b_m &= \sum_{s=1}^{t}\binom{m+t}{s+1}2^{(m-1)(s+1)} G((r-1)2^{k-m+1}+1, m-1,t-s)
+\end{align*}
+We can solve recursion for $x_k$ and get a solution in the following form
+\begin{align*}
+x_k &= x_0 \prod_{s=1}^{k} a_s + \sum_{m=1}^{k} b_{m} \prod_{s=m+1}^{k}a_s \\
+x_0 &= ((r-1)2^k+1)^t
+\end{align*}
+where $\prod_{s=k+1}^{k}a_s = 1$.
+
+For $b_m$, we can expand $G$ terms by induction and get the following formula
+\begin{align*}
+b_m &= \sum_{s=1}^{t}
+       \binom{m+t}{s+1}2^{(m-1)(s+1)} G((r-1)2^{k-m+1}+1, m-1,t-s)\\
+    &= 2^{\binom{m}{2}} 
+       \sum_{s=1}^{t}
+       \frac{(m+t)!}{(s+1)!}2^{(m-1)s}
+         \sum_{a=0}^{t-s} 2^{a(m-1)}
+           \sum_{b=0}^{a}
+           \alpha_{(t-s)ab}((r-1)2^{k-m+1}+1)^b \\
+    &= (m+t)!2^{\binom{m}{2}}
+       \sum_{s=1}^{t}
+         \sum_{a=0}^{t-s}
+           \sum_{b=0}^{a}
+           \frac{\alpha_{(t-s)ab}2^{(a+s)(m-1)}}{(s+1)!} ((r-1)2^{k-m+1}+1)^b \\
+    &= (m+t)!2^{\binom{m}{2}}
+       \sum_{s=1}^{t}
+         \sum_{a=0}^{t-s}
+           \sum_{b=0}^{a}
+             \sum_{c=0}^{b}
+             \alpha_{(t-s)ab}
+             \binom{b}{c}
+             \frac{2^{(a+s-c)(m-1)+ck}}{(s+1)!}(r-1)^c
+\end{align*}
+next, we can find expressions for sums and products required for the $x_k$ formula
+\begin{align*}
+\prod_{s=m+1}^{k}a_s
+&=
+   \frac{(k+t)!}{(m+t)!}
+   2^{\binom{k}{2} - \binom{m}{2}} \\
+x_0\prod_{s=1}^{k}a_s
+&= 
+   \frac{(k+t)!}{t!}
+   2^{\binom{k}{2}} ((r-1)2^k+1)^t \\
+&=
+   \frac{(k+t)!}{t!}
+   2^{\binom{k}{2}}
+   \sum_{i=0}^{t}
+     \binom{t}{i}
+     2^{ik}
+     (r-1)^i \\
+&= (k+t)!
+   2^{\binom{k}{2}}
+   \sum_{i=0}^{t}
+     2^{ik}
+     \sum_{j=0}^{i}
+       \frac{(-1)^{i-j}}{t!}
+       \binom{t}{i}
+       \binom{i}{j}
+       r^j \\
+\sum_{m=1}^{k} b_{m} \prod_{s=m+1}^{k}a_s
+&=
+  (k+t)!
+  2^{\binom{k}{2}}
+  \sum_{m=0}^{k-1}
+    \sum_{s=1}^{t}
+      \sum_{a=0}^{t-s}
+        \sum_{b=0}^{a}
+          \sum_{c=0}^{b}
+          \alpha_{(t-s)ab}
+          \binom{b}{c}
+          \frac{2^{(a+s-c)m+ck}}{(s+1)!}(r-1)^c  \\
+&=
+  (k+t)!
+  2^{\binom{k}{2}}
+  \sum_{s=1}^{t}
+    \sum_{a=0}^{t-s}
+      \sum_{b=0}^{a}
+        \sum_{c=0}^{b}
+        \alpha_{(t-s)ab}
+        \binom{b}{c}
+        \frac{1}{(s+1)!}
+        \frac{2^{(a+s)k}-2^{ck}}{2^{a+s-c}-1}
+        (r-1)^c
+\end{align*}
+In the last formula, we need to separate nested sums into two parts to finish the proof. The first sum is over $2^{ck}$ terms, and the second one is over $2^{(a+s)k}$. Next, we re-index the sum in order to obtain $2^{ik}$ terms, which gives us
+\begin{align*}
+\sum_{m=1}^{k} b_{m} \prod_{s=m+1}^{k}a_s
+&= 
+  (k+t)!
+  2^{\binom{k}{2}}
+  \left(
+    \sum_{i=0}^{t-1}
+      2^{ik}
+      \sum_{j=0}^{i}
+         (-1)^{i-j+1}
+         \binom{i}{j}
+         q_{ti}
+         r^j
+     + \sum_{i=1}^{t}
+      2^{ik}
+      \sum_{j=0}^{i-1}
+         f_{tij}
+         r^j
+  \right)\\
+q_{ti}
+&=
+ \sum_{a=i}^{t-1}
+   \sum_{b=i}^{a}
+     \sum_{c=i}^{b}
+       \binom{c}{i}
+       \frac{\alpha_{abc}}
+            {(t-a+1)!(2^{t+b-a-i}-1)} \\
+f_{tij}
+&=
+  \sum_{a=j}^{i-1}
+    \sum_{b=j}^{a}
+      \sum_{c=j}^{b}
+        (-1)^{c-j}
+        \binom{b}{c}
+        \binom{c}{j}
+        \frac{\alpha_{(t-i+a)ab}}
+             {(i-a+1)!(2^{i-c}-1)}
+\end{align*}
+Finally, we get the answer by plugging everything into the recursion formula using the fact that $q_{tt} = f_{tii} = 0$, which gives us the desired formula
+\begin{align*}
+G(r, k, t)
+&=
+  (k+t)!2^{\binom{k}{2}}
+  \sum_{i=0}^{t}
+    2^{ik}
+    \sum_{j=0}^{i}
+      \alpha_{tij}
+      r^j \\
+a_{tij}
+&=
+  (-1)^{i-j}
+  \binom{i}{j}
+  \left(
+    \frac{1}{i!(t-i)!}
+    - q_{ti}
+  \right)
+  +f_{tij}
+\end{align*}
+\end{proof}
+
+% Lemma: Alpha decomposition
+\begin{theorem}
+\label{theorem:alpha-decomposition}
+If $0 \le j \le i \le t$ and $\alpha_{tij}$ is defined by equation ($\textit{\ref{eq:alpha-definition}}$) then
+\begin{align}
+\alpha_{tij} = \alpha_{(t-i)00} \, \alpha_{(i-j)(i-j)0} \, \alpha_{jjj}
+\end{align}
+\end{theorem}
+\begin{proof}
+With equation ($\ref{eq:alpha-definition}$), we can simplify each of the decomposition terms
+\begin{align}
+    \alpha_{jjj} &= \frac{1}{j!} - q_{jj} + f_{jjj} = \frac{1}{j!} \\
+    \alpha_{(i-j)(i-j)0} &= \frac{(-1)^{i-j}}{(i-j)!} + f_{(i-j)(i-j)0} \label{eq:alpha-ii0} \\
+    \alpha_{(t-i)00} &= \frac{1}{(t-i)!}-q_{(t-i)0}
+\end{align}
+where $q_{ti}$ is define in equation ($\ref{eq:q-definition}$) and $f_{tij}$ in equation ($\ref{eq:f-definition}$). In the above equalities, we used the identity $q_{tt} = f_{tii} = 0$ to make simplifications. The main result can be proved by induction. Multiplying the terms above gives us
+\begin{align*}
+\alpha_{(t-i)00} \, \alpha_{(i-j)(i-j)0} \, \alpha_{jjj}
+&=
+  \left(\frac{1}{(t-i)!}-q_{(t-i)0}\right)
+  \left(\frac{(-1)^{i-j}}{(i-j)!} + f_{(i-j)(i-j)0}\right)
+  \frac{1}{j!} \\
+&= 
+  (-1)^{i-j}
+  \binom{i}{j}
+  \left(\frac{1}{i!(t-i)!}-\frac{1}{i!}q_{(t-i)0}\right)
+  + 
+  f_{(i-j)(i-j)0}
+  \frac{1}{j!}
+  \left(\frac{1}{(t-i)!}-q_{(t-i)0}\right)
+\end{align*}
+The RHS equals $\alpha_{tij}$ if the two identities below hold
+\begin{align*}
+q_{ti}
+&= \frac{1}{i!}q_{(t-i)0} \\
+f_{tij}
+&= 
+    \frac{1}{j!}
+    f_{(i-j)(i-j)0}
+    \left(\frac{1}{(t-i)!}-q_{(t-i)0}\right) \\
+&= 
+    \frac{1}{j!}
+    f_{(i-j)(i-j)0}
+    \alpha_{(t-i)00}
+\end{align*}
+The validity of the equalities above can be proved by induction. We start the induction by noticing that the identity holds trivially if $t, i, j \in \{0, 1\}$ and $j \le i \le t$. Next, assuming that induction holds, we can get the identity
+\begin{align*}
+\alpha_{(a+i)(b+i)(c+i)}
+&= \alpha_{(a-b)00}\alpha_{(b-c)(b-c)0}\alpha_{(c+i)(c+i)(c+i)} \\
+&= \alpha_{(a-b)00}\alpha_{(b-c)(b-c)0}\frac{1}{(c+i)!} \\
+&= \alpha_{(a-b)00}\alpha_{(b-c)(b-c)0}\alpha_{ccc}\frac{c!}{(c+i)!} \\
+&= \alpha_{abc}\frac{c!}{(c+i)!}
+\end{align*}
+From equation ($\ref{eq:q-definition}$) we see that $q_{ti}$ depends only on $\alpha_{abc}$ terms for which $a < t$. By strong induction in combination with equation ($\ref{eq:q-definition}$) we get
+\begin{align*}
+q_{ti}
+&=
+ \sum_{a=i}^{t-1}
+   \sum_{b=i}^{a}
+     \sum_{c=i}^{b}
+       \binom{c}{i}
+       \frac{\alpha_{abc}}
+            {(t-a+1)!(2^{t+b-a-i}-1)} \\
+&=
+ \sum_{a=0}^{t-i-1}
+   \sum_{b=0}^{a}
+     \sum_{c=0}^{b}
+       \binom{c+i}{i}
+       \frac{\alpha_{(a+i)(b+i)(c+i)}}
+            {(t-a-i+1)!(2^{t+b-a-i}-1)} \\
+&=
+ \sum_{a=0}^{t-i-1}
+   \sum_{b=0}^{a}
+     \sum_{c=0}^{b}
+       \binom{c+i}{i}
+       \frac{c!}{(c+i)!}
+       \frac{\alpha_{abc}}
+            {(t-a-i+1)!(2^{t+b-a-i}-1)} \\
+&=
+ \frac{1}{i!}
+ \sum_{a=0}^{t-i-1}
+   \sum_{b=0}^{a}
+     \sum_{c=0}^{b}
+       \frac{\alpha_{abc}}
+            {(t-i-a+1)!(2^{t-i+b-a}-1)} \\
+&= 
+  \frac{1}{i!}
+  q_{(t-i)0}
+\end{align*}
+Similarly, proof of the $f_{tij}$ identity requires a different $\alpha_{tij}$ identity, which we assume holds by induction
+\begin{align*}
+\alpha_{(a+c+j)(a+j)(b+j)}
+&= \alpha_{c00}\alpha_{(a-b)(a-b)0} \alpha_{(b+j)(b+j)(b+j)} \\
+&= \alpha_{c00}\alpha_{(a-b)(a-b)0} \frac{1}{(b+j)!} \\
+&= \alpha_{c00}\alpha_{(a-b)(a-b)0} \alpha_{bbb}\frac{b!}{(b+j)!} \\
+&= \alpha_{c00}\alpha_{aab} \frac{b!}{(b+j)!}
+\end{align*}
+From equation ($\ref{eq:f-definition}$) we see that $f_{tij}$ depends only on $\alpha_{abc}$ terms for which $a < t$. By strong induction, we get
+\begin{align*}
+f_{tij} 
+&= 
+  \sum_{a=j}^{i-1}
+    \sum_{b=j}^{a}
+      \sum_{c=j}^{b}
+        (-1)^{c-j}
+        \binom{b}{c}
+        \binom{c}{j}
+        \frac{\alpha_{(t-i+a)ab}}
+             {(i-a+1)!(2^{i-c}-1)} \\
+&= 
+  \sum_{a=0}^{i-j-1}
+    \sum_{b=0}^{a}
+      \sum_{c=0}^{b}
+        (-1)^{c}
+        \binom{b+j}{c+j}
+        \binom{c+j}{j}
+        \frac{\alpha_{(t-i+a+j)(a+j)(b+j)}}
+             {(i-j-a+1)!(2^{i-j-c}-1)} \\
+&= 
+  \alpha_{(t-i)00}
+  \sum_{a=0}^{i-j-1}
+    \sum_{b=0}^{a}
+      \sum_{c=0}^{b}
+        (-1)^{c}
+        \binom{b+j}{c+j}
+        \binom{c+j}{j}
+        \frac{b!}{(b+j)!}
+        \frac{\alpha_{aab}}
+             {(i-j-a+1)!(2^{i-j-c}-1)} \\
+&= 
+  \frac{1}{j!}
+  \alpha_{(t-i)00}
+  \sum_{a=0}^{i-j-1}
+    \sum_{b=0}^{a}
+      \sum_{c=0}^{b}
+        (-1)^{c}
+        \binom{b}{c}
+        \frac{\alpha_{aab}}
+             {(i-j-a+1)!(2^{i-j-c}-1)} \\
+&= 
+  \frac{1}{j!}
+  \alpha_{(t-i)00}
+  f_{(i-j)(i-j)0}
+\end{align*}
+This completes the proof.
+\end{proof}
+
+Define $\beta_i = \alpha_{ii0}$ and $\gamma_i = \alpha_{i00}$. Theorem $\ref{theorem:alpha-decomposition}$ allows us to define $\alpha_{tij}$ in terms of $\beta$ and $\gamma$
+\begin{align}
+\label{eq:beta-gamma-decomposition}
+\alpha_{tij} = \frac{\beta_{i-j} \, \gamma_{t-i}}{j!} 
+\end{align}
+The following lemma shows an essential relation between $\beta_i$ and $\gamma_j$
+
+% Lemma: relations between beta-gamma generating functions
+\begin{theorem}
+\label{theorem:beta-gamma-rel}
+Define $g(z) = \beta_0 + \beta_1 z + \beta_2 z^2 + ...$ and $f(z) = \gamma_0 + \gamma_1 z + \gamma_2 z^2 + ...$. Then
+\begin{align}
+\label{eq:gf-inverse}
+ g(z)f(z) &= 1 \\
+\label{eq:gf-bernoulli}
+g(z)f(2z) &= B^+(z) = \frac{z}{1 - e^{-z}} \\
+\label{eq:g-negative}
+g(-z)f(z) &= e^z
+\end{align}
+where $B^+(z)$ is a generating function for the Bernoulli numbers with $B_1^+ = 1/2$.
+\end{theorem}
+\begin{proof}
+From definition for $G(r, k, t)$ in equation ($\ref{eq:G-def}$), we can easily show that $G(r, 0, t) = r^t$. Similarly, we can set $k=0$ in equation ($\ref{eq:lemma-3-G}$) to get the following relation
+\begin{align*}
+G(r, 0, t)
+= t! \sum_{i=0}^t \sum_{j=0}^i \alpha_{tij} r^j
+= t! \sum_{j=0}^{t} \sum_{i=j}^{t} \alpha_{tij} r^j
+= r^t + t! \sum_{j=0}^{t-1} \sum_{i=j}^{t} \alpha_{tij} r^j
+\end{align*}
+where in the last equality we used the fact that $\alpha_{ttt} = 1/t!$. If $t > 0$, then we can interpret $G$ as a polynomial in $r$, which means that the above equation's RHS must equal $r^t$ for all $r$. It implies that if $0 \le j < t$, then
+\begin{align*}
+\sum_{i=j}^{t} \alpha_{tij} = 0
+\end{align*}
+Re-indexing the sum, replacing $t-j$ with $t$ and using decomposition of $\alpha_{tij}$ from equation ($\ref{eq:beta-gamma-decomposition}$) gives us 
+\begin{align}
+\label{eq:beta-gamma-1}
+\sum_{i=0}^{t} \gamma_{t-i} \beta_{i} = 0
+\end{align}
+For the $t=0$ case, we can easily show that $\beta_0 \gamma_0 = 1$ since $\beta_0 = \gamma_0 = 1$. This proves the identity in equation ($\ref{eq:gf-inverse}$), namely $g(z)f(z) = 1$.
+
+Similarly, to prove equation ($\ref{eq:gf-bernoulli}$), we can consider the case where $r = 0$ and $k=1$. If we plug these values into equations ($\ref{eq:lemma-3-G}$) and ($\ref{eq:G-def}$), use the identity $\alpha_{ti0} = \beta_{i} \gamma_{t-i}$ then we get
+\begin{align}
+\label{eq:beta-gamma-2}
+(t+1)!\sum_{i=0}^t 2^i \beta_i \gamma_{t-i} = (-1)^t
+\end{align}
+From this, the formula for $g(2z)f(z)=(1-e^{-z})/z$ immediately follows. Rearranging the terms with the help of the equation ($\ref{eq:gf-inverse}$) gives us the desired result in equation ($\ref{eq:gf-bernoulli}$).
+
+The $zg(2z)=g(z)(1-e^{-z})$ identity also gives us a recursive definition of $\beta_t$, which we will use to prove the final identity in equation ($\ref{eq:g-negative}$)
+\begin{align}
+\label{eq:beta-recur}
+\beta_{t} 
+&=
+\frac{1}{2^t-1}
+\sum_{i=0}^{t-1}
+  \frac{(-1)^{t-i} \beta_{i}}{(t-i+1)!}
+\end{align}
+To prove the equation ($\ref{eq:g-negative}$), it is sufficient to show that the following identity holds
+\begin{align}
+    \label{eq:alternative-beta-sign}
+    \sum_{i=0}^{t} \frac{\beta_{i}}{(t-i)!} = (-1)^t \beta_t
+\end{align}
+To do that we use definition of $\beta_t$, namely $\beta_t = \alpha_{tt0} = (-1)^t/t! + f_{tt0}$ where $f_{tt0}$ is defined in equation ($\ref{eq:f-definition}$). First, we rewrite $f_{tt0}$ by cancelling some terms
+\begin{align}
+\label{eq:f-rewritten}
+f_{tt0}
+&=
+  \sum_{a=0}^{t-1}
+    \sum_{b=0}^{a}
+      \sum_{c=0}^{b}
+        \frac{(-1)^{c} \beta_{a-b}}
+             {(t-a+1)!(2^{t-c}-1)c!(b-c)!}
+\end{align}
+Next, we apply the change of variables in summation
+\begin{align*}
+\begin{cases}
+    0 \le a \le t-1\\
+    0 \le b \le a\\
+    0 \le c \le b\\
+\end{cases}
+\Longleftrightarrow
+\begin{cases}
+    0 \le c \le t-1\\
+    c \le a \le t-1\\
+    c \le b \le a\\
+\end{cases}
+\Longleftrightarrow
+\begin{cases}
+    0 \le t-c-1 \le t-1\\
+    0 \le a-c \le t-c-1\\
+    0 \le a-b \le a-c\\
+\end{cases}
+\Longleftrightarrow
+\begin{cases}
+    0 \le k \le t-1\\
+    0 \le j \le k\\
+    0 \le i \le j\\
+\end{cases}
+\end{align*}
+where we used the following substitution $k=t-c-1$, $j=a-c$ and $i=a-b$. We can plug new variables into the equation ($\ref{eq:f-rewritten}$) and get
+\begin{align*}
+f_{tt0}
+&=
+  \sum_{k=0}^{t-1}
+    \sum_{j=0}^{k}
+      \sum_{i=0}^{j}
+        \frac{(-1)^{t-k-1} \beta_{i}}
+             {(k-j+2)!(2^{k+1}-1)(t-k-1)!(j-i)!}
+\end{align*}
+Next, we can simplify the equation above by using an inductive argument on equation ($\ref{eq:alternative-beta-sign}$). The identity holds trivially for $t=0$. Next, by strong induction, we assume that it holds for all $j < t$, which gives us
+\begin{align*}
+f_{tt0}
+&=
+  \sum_{k=0}^{t-1}
+    \sum_{j=0}^{k}
+      \sum_{i=0}^{j}
+        \frac{(-1)^{t-k-1} \beta_{i}}
+             {(k-j+2)!(2^{k+1}-1)(t-k-1)!(j-i)!} \\
+&=
+  \sum_{k=0}^{t-1}
+    \sum_{j=0}^{k}
+      \frac{(-1)^{t-k-1}}
+           {(k-j+2)!(2^{k+1}-1)(t-k-1)!}
+      \sum_{i=0}^{j}
+        \frac{\beta_{i}}{(j-i)!} \\
+&=
+  \sum_{k=0}^{t-1}
+    \frac{(-1)^{t}}
+         {(t-k-1)!(2^{k+1}-1)}
+    \sum_{j=0}^{k}
+      \frac{(-1)^{k-j+1} \beta_{j}}
+           {(k-j+2)!} \\
+&=
+  (-1)^t
+  \sum_{k=1}^{t}
+    \frac{\beta_{k}}
+         {(t-k)!}
+\end{align*}
+where in the third equality we applied induction to get $(-1)^j\beta_j$ where $j < t$ and in the fourth equality we used recursive definition of $\beta_{k+1}$ from equation ($\ref{eq:beta-recur}$) to make further simplifications.
+
+And finally
+\begin{align*}
+(-1)^t \beta_t
+= \frac{1}{t!} + (-1)^t f_{tt0}
+= \frac{1}{t!} + \sum_{k=1}^{t} \frac{\beta_{k}}{(t-k)!}
+= \sum_{k=0}^{t} \frac{\beta_{k}}{(t-k)!}
+\end{align*}
+which gives us $g(-z)=g(z)e^z$ relation and completes the proof
+\end{proof}
+
+% Theorem: Value of the Fabius function
+\begin{theorem}
+\label{theorem:main}
+If $F$ is a CDF of the Fabius distribution, $k, m \in \mathbb{N}$ such that $0 \le k/2^m \le 1$ then
+\begin{align}
+F\left(\frac{k}{2^m}\right) 
+&=
+  \sum_{i=0}^{m}
+    F\left(\frac{1}{2^i}\right) 
+    \frac{(-1)^i}
+         {(m-i)!}
+    \frac{2^{\binom{i}{2}}}
+         {2^{\binom{m}{2}}}
+    \sum_{j=0}^{k-1}
+    (-1)^{s_2(j)}
+    \left(k-j\right)^{m-i} \\
+F\left(\frac{1}{2^m}\right)
+&= 
+  \frac{1}{2^{\binom{m}{2}}(2^m-1)}
+  \sum_{i=0}^{m-1}
+    \frac{2^{\binom{i}{2}}}{(m-i+1)!}
+    F\left(\frac{1}{2^i}\right)
+\end{align}
+\end{theorem}
+\begin{proof}
+We assume $n \ge m$. Then from Theorem $\ref{theorem:pn}$ we get
+\begin{align*}
+p_n\left(\frac{k}{2^m}\right)
+&=
+  \frac{2^{\binom{n+1}{2}}}
+       {(n-1)!}
+  \sum_{j=0}^{k2^{n-m}-1}
+    (-1)^{s_2(j)}
+    \left(\frac{k}{2^m}-\frac{j}{2^n}\right)^{n-1} \\
+&=
+  \frac{2^{\binom{n+1}{2}}}
+       {2^{n(n-1)}(n-1)!}
+  \sum_{i=0}^{k-1}
+    \sum_{j=0}^{2^{n-m}-1}
+      (-1)^{s_2(i) + s_2(j)}
+      \left((k-i)2^{n-m}-j\right)^{n-1} \\
+&=
+  \frac{2^{\binom{n+1}{2}}}
+       {2^{n(n-1)}(n-1)!}
+  \sum_{r=0}^{k-1}
+    (-1)^{s_2(r)}
+    G(k-r, n-m, m-1) \\
+&=
+  \frac{2^{\binom{n+1}{2} + \binom{n-m}{2}}}
+       {2^{n(n-1)}}
+  \sum_{r=0}^{k-1}
+      (-1)^{s_2(r)}
+      \sum_{i=0}^{m-1}
+        2^{i(n-m)}
+        \sum_{j=0}^{i}
+          \alpha_{(m-1)ij}
+          (k-r)^j \\
+&=
+  2^{\binom{m+1}{2}}
+  \sum_{i=0}^{m-1}
+    \frac{1}{2^{n(m-i-1) + im}}
+    \sum_{j=0}^{i}
+      \alpha_{(m-1)ij}
+      Q(k, k, j)
+\end{align*}
+where the second equality uses the fact that $s_2(i2^k+j) = s_2(i) + s_2(j)$ if $j < 2^k$ and the fourth equality follows from equation ($\ref{eq:lemma-3-G}$). Combining the equation above with the fact that $F(y) = p(y/2)/2$ we get
+\begin{align*}
+F\left(\frac{k}{2^m}\right)
+&=
+  \frac{1}{2} \, p\left(\frac{k}{2^{m+1}}\right) \\
+&=
+  \lim_{n \to \infty}
+    \frac{1}{2} \, p_n\left(\frac{k}{2^{m+1}}\right) \\
+&=
+  \lim_{n \to \infty}
+    2^{\binom{m+2}{2}}
+    \sum_{i=0}^{m}
+      \frac{1}{2^{n(m-i) + i(m+1)+1}}
+      \sum_{j=0}^{i}
+        \alpha_{mij}
+        Q(k, k, j) \\
+&= 
+  \frac{2^{\binom{m+2}{2}}}
+       {2^{m^2+m+1}}
+  \sum_{j=0}^{m}
+    \alpha_{mmj}
+    Q(k, k, j) \\
+&= 
+  \frac{1}{2^{\binom{m}{2}}}
+  \sum_{j=0}^{m}
+    \beta_{m-j}
+    \frac{Q(k, k, j)}{j!} \\
+&= 
+  \frac{1}{2^{\binom{m}{2}}}
+  \sum_{i=0}^{m}
+    \beta_{i}
+    \frac{Q(k, k, m-i)}{(m-i)!}
+\end{align*}
+Next, consider the case where $F(1/2^m)$. Then from formula for $F(k/2^m)$ and equation ($\ref{eq:alternative-beta-sign}$), which follows from Theorem $\ref{theorem:beta-gamma-rel}$, we get
+\begin{align*}
+F\left(\frac{1}{2^m}\right)
+= 
+  \frac{1}{2^{\binom{m}{2}}}
+  \sum_{i=0}^{m}
+    \frac{\beta_{i}}{(m-i)!}
+= 
+  \frac{(-1)^m}{2^{\binom{m}{2}}} \beta_m
+\end{align*}
+Rearranging the terms gives us the formula for the $\beta_m$ terms in terms of the Fabius function
+\begin{align}
+\label{eq:beta-f}
+\beta_m = (-1)^m2^{\binom{m}{2}}F\left(\frac{1}{2^m}\right)
+\end{align}
+Substituting the equation ($\ref{eq:beta-f}$) into the equation ($\ref{eq:beta-recur}$) and formula for $F(k/2^m)$ finishes the proof.
+\end{proof}
+
+It is important to note that $\beta_m$ in equation ($\ref{eq:beta-f}$) has quite a similar relation to the Fabius function as a previously discovered constant $d_n$ in \cite{dereyna2017arithmetic} and $w_n$ in \cite{slipperyslide}.
+
+\section{Acknowledgements}
+I want to thank A. for introducing me to the problem. In addition, I would like to thank A. and T. for their discussion and solutions to the issue, which is almost the same as the problem in Lemma $\ref{lemma:q-zeros}$. Their discussion helped with the direction of the proofs in this paper.
+
+\bibliographystyle{alpha}
+\bibliography{references}
+
+\end{document}
+

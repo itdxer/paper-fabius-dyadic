@@ -1,0 +1,31 @@
+@misc{haugland2020evaluating,
+      title={Evaluating the Fabius function}, 
+      author={Jan Kristian Haugland},
+      year={2020},
+      eprint={1609.07999},
+      archivePrefix={arXiv},
+      primaryClass={math.GM}
+}
+@article{Fabius1966APE,
+  title={A probabilistic example of a nowhere analytic C∞-function},
+  author={Jeroen Fabius},
+  journal={Zeitschrift f{\"u}r Wahrscheinlichkeitstheorie und Verwandte Gebiete},
+  year={1966},
+  volume={5},
+  pages={173-174},
+  url={https://api.semanticscholar.org/CorpusID:122126180}
+}
+@misc{dereyna2017arithmetic,
+      title={Arithmetic of the Fabius function}, 
+      author={Juan Arias de Reyna},
+      year={2017},
+      eprint={1702.06487},
+      archivePrefix={arXiv},
+      primaryClass={math.NT}
+}
+@misc{slipperyslide,
+  author = {},
+  title = {{The Slippery Slide}},
+  howpublished = "\url{https://raw.githubusercontent.com/NevinBR/Articles/main/Papers/SlipperySlide.pdf}",
+  year = {2023}
+}
