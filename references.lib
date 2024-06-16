@@ -24,7 +24,7 @@
       primaryClass={math.NT}
 }
 @misc{slipperyslide,
-  author = {},
+  author = {Nevin Brackett-Rozinsky},
   title = {{The Slippery Slide}},
   howpublished = "\url{https://raw.githubusercontent.com/NevinBR/Articles/main/Papers/SlipperySlide.pdf}",
   year = {2023}
